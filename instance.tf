@@ -22,10 +22,10 @@ resource "aws_instance" "vpn-server" {
     source      = "vpnserver_setup/setup.sh"
     destination = "/tmp/setup.sh"
     connection {
-     type     = "ssh"
-     user     = "ubuntu"
-     private_key = file("yuriy_ec2.pem")
-     host     = aws_instance.vpn-server.public_ip
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("yuriy_ec2.pem")
+      host        = aws_instance.vpn-server.public_ip
     }
   }
 
@@ -40,22 +40,22 @@ resource "aws_instance" "vpn-server" {
   #   }
   # }  
 
-# Declaring the provisioner that start installing vpn server and all dependencies
+  # Declaring the provisioner that start installing vpn server and all dependencies
 
   provisioner "remote-exec" {
-     inline = [
-       "chmod +x /tmp/setup.sh",
-       "sudo /tmp/setup.sh",
-     ]
-     connection {
-      type     = "ssh"
-      user     = "ubuntu"
+    inline = [
+      "chmod +x /tmp/setup.sh",
+      "sudo /tmp/setup.sh",
+    ]
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
       private_key = file("yuriy_ec2.pem")
-      host     = aws_instance.vpn-server.public_ip
-     }
-   }
+      host        = aws_instance.vpn-server.public_ip
+    }
+  }
 
-# Declaring the provisioner that start installing backend and all dependencies
+  # Declaring the provisioner that start installing backend and all dependencies
 
   # provisioner "remote-exec" {
   #    inline = [
