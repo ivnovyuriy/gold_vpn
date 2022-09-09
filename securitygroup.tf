@@ -1,4 +1,9 @@
-resource "aws_security_group" "vpn_security" {
+resource "aws_security_group" "sg" {
+  depends_on = [
+    aws_vpc.main,
+    aws_subnet.main-public-1,
+    aws_subnet.main-private-1
+  ]
   vpc_id      = aws_vpc.main.id
   name        = "vpn_security"
   description = "security group that allows ssh and all egress traffic"

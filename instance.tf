@@ -4,6 +4,12 @@ resource "aws_key_pair" "mykey" {
 }
 
 resource "aws_instance" "vpn-server" {
+  depends_on = [
+    aws_vpc.main,
+    aws_subnet.main-public-1,
+    aws_subnet.main-private-1,
+    aws_security_group.sg
+  ]
   ami           = var.AMIS[var.AWS_REGION]
   instance_type = "t2.micro"
 
@@ -11,10 +17,13 @@ resource "aws_instance" "vpn-server" {
   subnet_id = aws_subnet.main-public-1.id
 
   # the security group
-  vpc_security_group_ids = [aws_security_group.vpn_security.id]
+  vpc_security_group_ids = [aws_security_group.sg.id]
 
   # the public SSH key
   key_name = aws_key_pair.mykey.key_name
+
+  private_ip = "10.0.1.100"
+
 
   # Declaring the first provisioner that provision the vpn-server installation file to /tmp directory
 
@@ -29,16 +38,9 @@ resource "aws_instance" "vpn-server" {
     }
   }
 
-  # provisioner "file" {                
-  #   source      = "strongvpn/"
-  #   destination = "./"
-  #   connection {
-  #     type     = "ssh"
-  #     user     = "ubuntu"
-  #     private_key = file("yuriy_ec2.pem")
-  #     host     = aws_instance.vpn-server.public_ip
-  #   }
-  # }  
+  tags = {
+    Name = "VPN-Server"
+  }
 
   # Declaring the provisioner that start installing vpn server and all dependencies
 
@@ -54,21 +56,6 @@ resource "aws_instance" "vpn-server" {
       host        = aws_instance.vpn-server.public_ip
     }
   }
-
-  # Declaring the provisioner that start installing backend and all dependencies
-
-  # provisioner "remote-exec" {
-  #    inline = [
-  #      "chmod +x ./install.sh",
-  #      "sudo ./install.sh ${aws_instance.vpn-server.public_ip}"
-  #    ]
-  #    connection {
-  #     type     = "ssh"
-  #     user     = "ubuntu"
-  #     private_key = file("yuriy_ec2.pem")
-  #     host     = aws_instance.vpn-server.public_ip
-  #    }
-  #  }
 
 }
 
