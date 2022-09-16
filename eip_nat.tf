@@ -1,7 +1,7 @@
-resource "aws_eip" "my-eip" {
-  instance = aws_instance.vpn-server.id
-  vpc      = true
-}
+# resource "aws_eip" "my-eip" {
+#   instance = aws_instance.vpn-server.id
+#   vpc      = true
+# }
 
 # # Elastic IP created in AWS web interface
 
